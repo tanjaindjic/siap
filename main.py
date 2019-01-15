@@ -1,19 +1,18 @@
-import pip
 import json
 from vino import Vino
 import statistics
 import numpy as np
 from pprint import pprint
 import matplotlib.pyplot as plt
-print(pip.__version__)
+
 with open('winemag-data-130k-v2.json') as f:
     data = json.load(f)
-print(len(data))
+print('velicina data seta: ' + str(len(data)))
 vina = []
 for v in data:
     if (v['points'] is not None and v['country'] is not None and v['variety'] is not None and v['title'] is not None):
         vina.append(Vino(v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery']))
-print(len(vina))
+print('velicina data seta nakon uklanjanja suvisnih podataka: ' + str(len(vina)))
 k1=[] #solidan kvalitet vina
 k2=[] #vrlo dobar kvalitet vina
 k3=[] #izuzetno dobar kvalitet
@@ -28,20 +27,19 @@ for v in vina:
             k3.append(int(v.price))
         else:
             k4.append(int(v.price))
-print(len(k1))
-print(len(k2))
-print(len(k3))
-print(len(k4))
+print('k1 - broj vina solidnog kvaliteta (80-84 poena): ' + str(len(k1)))
+print('k2 - broj vina vrlo dobrog kvaliteta (85-90 poena): ' + str(len(k2)))
+print('k3 - broj vina izuzetno dobrog kvaliteta (90-94 poena): ' + str(len(k3)))
+print('k4 - broj vina savrsenog kvaliteta (95-100 poena): ' + str(len(k4)))
 
 prosek_k1 = statistics.median(k1)
-
-print(prosek_k1)
+print('prosecna cena k1: ' + str(prosek_k1) + '$')
 prosek_k2 = statistics.median(k2)
-print(prosek_k2)
+print('prosecna cena k2: ' + str(prosek_k2) + '$')
 prosek_k3 = statistics.median(k3)
-print(prosek_k3)
+print('prosecna cena k3: ' + str(prosek_k3) + '$')
 prosek_k4 = statistics.median(k4)
-print(prosek_k4)
+print('prosecna cena k4: ' + str(prosek_k4) + '$')
 pairs_k1 = []
 pairs_k2 = []
 pairs_k3 = []
@@ -84,6 +82,9 @@ for v in vina:
 
 axes = plt.gca()
 axes.set_xlim([0,1000])
+axes.set_xlabel('Cena')
+axes.set_title('Odnos cene i kvalilteta')
+axes.set_ylabel('Poeni')
 a = np.array(pairs_k1)
 plt.plot(a[:,0], a[:,1], 'ro')
 a = np.array(pairs_k2)
