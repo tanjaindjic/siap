@@ -2,17 +2,74 @@ import json
 from vino import Vino
 import statistics
 import numpy as np
+import pip
+print(pip.__version__)
+import nltk
+import re
+from nltk.corpus import stopwords
+stop_words = set(stopwords.words('english'))
+stop_words.add("the")
+from collections import Counter
+
 from pprint import pprint
 import matplotlib.pyplot as plt
+
+vazne_reci = []
+def get_important_words(vreca):
+    cnt = Counter(vreca)
+    vazne_reci = []
+    vazne_reci.append([k for k, v in cnt.items() if v > 100])
+    return vazne_reci
+
+def word_extraction(sentence):
+    sentence = sentence.lower()
+    words = re.sub("[^\w]", " ", sentence).split()
+    cleaned_text = [w.lower() for w in words if w not in stop_words]
+    return cleaned_text
+def isEnglish(s):
+    niz = []
+
+    for sentence in s:
+        try:
+            sentence.encode(encoding='utf-8').decode('ascii')
+        except UnicodeDecodeError:
+            print("")
+        else:
+            if(not sentence.isdigit()):
+                niz.append(sentence)
+    return niz
+
+def tokenize(sentences):
+    words = []
+
+    vazne_reci = get_important_words(sentences)
+    for sentence in vazne_reci:
+        #print(sentence)
+        sentence = isEnglish(sentence)
+        words.extend(sentence)
+    words = sorted(list(set(words)))
+
+    return words
 
 with open('winemag-data-130k-v2.json') as f:
     data = json.load(f)
 print('velicina data seta: ' + str(len(data)))
 vina = []
+vreca = []
 for v in data:
     if (v['points'] is not None and v['country'] is not None and v['variety'] is not None and v['title'] is not None):
         vina.append(Vino(v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery']))
+
+
 print('velicina data seta nakon uklanjanja suvisnih podataka: ' + str(len(vina)))
+#print(str(round(len(vina)/5*3)) + " " + str(round(len(vina)/5*4)))
+trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
+for v in trening_set:
+    vreca.extend(word_extraction(v.description))
+#print(vreca)
+tokeni =  tokenize(vreca)
+print(tokeni)
+print("velicina tokena: " + str(tokeni.__len__()))
 k1=[] #solidan kvalitet vina
 k2=[] #vrlo dobar kvalitet vina
 k3=[] #izuzetno dobar kvalitet
@@ -86,13 +143,13 @@ axes.set_xlabel('Cena')
 axes.set_title('Odnos cene i kvalilteta')
 axes.set_ylabel('Poeni')
 a = np.array(pairs_k1)
-plt.plot(a[:,0], a[:,1], 'ro')
+#plt.plot(a[:,0], a[:,1], 'ro')
 a = np.array(pairs_k2)
-plt.plot(a[:,0], a[:,1], 'mo')
+#plt.plot(a[:,0], a[:,1], 'mo')
 a = np.array(pairs_k3)
-plt.plot(a[:,0], a[:,1], 'yo')
+#plt.plot(a[:,0], a[:,1], 'yo')
 a = np.array(pairs_k4)
-plt.plot(a[:,0], a[:,1], 'go')
-plt.show()
+#plt.plot(a[:,0], a[:,1], 'go')
+#plt.show()
 #print(str(vina[0]))
 #print(str(vina[1]))
