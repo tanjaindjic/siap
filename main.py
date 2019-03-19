@@ -6,15 +6,19 @@ import pip
 print(pip.__version__)
 import nltk
 import re
-from nltk.corpus import stopwords
-stop_words = set(stopwords.words('english'))
-stop_words.add("the")
+#from nltk.corpus import stopwords
+from atributes import Atribut
+#stop_words = set(stopwords.words('english'))
+#stop_words.add("the")
 from collections import Counter
 
 from pprint import pprint
 import matplotlib.pyplot as plt
 
 vazne_reci = []
+atributi = []
+categs = []
+
 def get_important_words(vreca):
     cnt = Counter(vreca)
     vazne_reci = []
@@ -24,8 +28,43 @@ def get_important_words(vreca):
 def word_extraction(sentence):
     sentence = sentence.lower()
     words = re.sub("[^\w]", " ", sentence).split()
-    cleaned_text = [w.lower() for w in words if w not in stop_words]
-    return cleaned_text
+    #cleaned_text = [w.lower() for w in words if w not in stop_words]
+    #return cleaned_text
+############################
+def descriptionIsEnglish(sentence):
+    try:
+        sentence.encode(encoding='utf-8').decode('ascii')
+    except UnicodeDecodeError:
+        return False
+    return True
+def get_word_vec(sentence):
+    vec = []
+    kategorije = []
+    sentence = sentence.upper();
+    for a in atributi:
+        word = a.__getattribute__('normalized')
+        if(word in sentence):
+            str = a.__getattribute__('category') + " " +  a.__getattribute__('subcategory') + " " +  a.__getattribute__('specific')
+            if str not in kategorije:
+                kategorije.append(str)
+    for c in categs:
+        if(c in kategorije):
+            vec.append(1)
+        else:
+            vec.append(0)
+    return (vec)
+def loadAtributes():
+    f = open("CWW.txt", "r")
+    for x in f:
+        rez = x.split('\t')
+        saZnakom = rez[3].split('\n');
+        rez[3] = saZnakom[0]
+        atributi.append(Atribut(rez[0], rez[1], rez[2], rez[3], 1))
+        str1111 = rez[0] + " " + rez[1] + " " + rez[2]
+        if str1111 not in categs:
+            categs.append(str1111)
+
+#####################
 def isEnglish(s):
     niz = []
 
@@ -51,6 +90,11 @@ def tokenize(sentences):
 
     return words
 
+
+
+
+
+loadAtributes()
 with open('winemag-data-130k-v2.json') as f:
     data = json.load(f)
 print('velicina data seta: ' + str(len(data)))
@@ -58,18 +102,21 @@ vina = []
 vreca = []
 for v in data:
     if (v['points'] is not None and v['country'] is not None and v['variety'] is not None and v['title'] is not None):
-        vina.append(Vino(v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery']))
+        if (descriptionIsEnglish(v['description'])):
+            vec = get_word_vec(v['description'])
+            print(vec)
+            vina.append(Vino(v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery']))
 
 
 print('velicina data seta nakon uklanjanja suvisnih podataka: ' + str(len(vina)))
 #print(str(round(len(vina)/5*3)) + " " + str(round(len(vina)/5*4)))
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
-for v in trening_set:
-    vreca.extend(word_extraction(v.description))
+#for v in trening_set:
+#    vreca.extend(word_extraction(v.description))
 #print(vreca)
-tokeni =  tokenize(vreca)
-print(tokeni)
-print("velicina tokena: " + str(tokeni.__len__()))
+#tokeni =  tokenize(vreca)
+#print(tokeni)
+#print("velicina tokena: " + str(tokeni.__len__()))
 k1=[] #solidan kvalitet vina
 k2=[] #vrlo dobar kvalitet vina
 k3=[] #izuzetno dobar kvalitet
