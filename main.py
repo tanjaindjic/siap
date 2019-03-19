@@ -11,6 +11,7 @@ from atributes import Atribut
 #stop_words = set(stopwords.words('english'))
 #stop_words.add("the")
 from collections import Counter
+from sklearn.metrics import jaccard_similarity_score
 
 from pprint import pprint
 import matplotlib.pyplot as plt
@@ -18,6 +19,9 @@ import matplotlib.pyplot as plt
 vazne_reci = []
 atributi = []
 categs = []
+vecNajVina = []
+zaPoredjenje = []
+noveTezine = []
 
 def get_important_words(vreca):
     cnt = Counter(vreca)
@@ -52,7 +56,7 @@ def get_word_vec(sentence):
             vec.append(1)
         else:
             vec.append(0)
-    return (vec)
+    return vec
 def loadAtributes():
     f = open("CWW.txt", "r")
     for x in f:
@@ -63,6 +67,44 @@ def loadAtributes():
         str1111 = rez[0] + " " + rez[1] + " " + rez[2]
         if str1111 not in categs:
             categs.append(str1111)
+    print('duzina vektora sa kategorijama - '+str(len(categs)))
+def loadTezine():
+    #prolai kroz sve deskripsone i dodeljuje im vektor
+    for nv in najboljaVina:
+        vecValue = get_word_vec(nv.__getattribute__('description'))
+        vecNajVina.append(vecValue)
+    tezine = vecNajVina[0]
+    #sabira po kolonama sve elemente da bi videli koliko puta se neki atribut pojavljuje
+    for vnv in vecNajVina[1:]:
+        tezine = list(map(sum, zip(tezine, vnv)))
+    #print('tezine - ' + str(tezine))
+    maxTezine = max(tezine)
+    korakTezine = round(maxTezine/16)
+    #print('korak za tezinu - '+str(korakTezine))
+    for t in tezine:
+        if(t<korakTezine):
+            noveTezine.append(1)
+        elif(t<(2*korakTezine)):
+            noveTezine.append(2)
+        elif(t<(4*korakTezine)):
+            noveTezine.append(3)
+        else:
+            noveTezine.append(4)
+    #print('nove tezine - '+str(noveTezine))
+    #napravi vektor za poredjenje za Jackardov koeficijent
+    for za in tezine:
+        if(za<(3*korakTezine)):
+            zaPoredjenje.append(0)
+        else:
+            zaPoredjenje.append(1)
+    #print('za poredjenje vektor -'+str(zaPoredjenje))
+
+
+def nadjiDescNum(description):
+    y_pred = get_word_vec(description)
+    ret = jaccard_similarity_score(zaPoredjenje, y_pred)
+    print('description --> '+str(ret))
+    return ret
 
 #####################
 def isEnglish(s):
@@ -90,25 +132,32 @@ def tokenize(sentences):
 
     return words
 
-
-
-
-
 loadAtributes()
 with open('winemag-data-130k-v2.json') as f:
     data = json.load(f)
 print('velicina data seta: ' + str(len(data)))
 vina = []
 vreca = []
+najboljaVina=[]
 for v in data:
     if (v['points'] is not None and v['country'] is not None and v['variety'] is not None and v['title'] is not None):
         if (descriptionIsEnglish(v['description'])):
-            vec = get_word_vec(v['description'])
-            print(vec)
-            vina.append(Vino(v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery']))
-
+            #vec = get_word_vec(v['description'])
+            #print(vec)
+            vina.append(Vino(v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery'], 0))
+            if(int(v['points'])>96):
+                najboljaVina.append(Vino(v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery'], 0))
+print('najbolja vina - duzina '+str(len(najboljaVina)))
+#njabolja vina - duzina --> za >97 se dobija 82, za >96 232, za >95 570
 
 print('velicina data seta nakon uklanjanja suvisnih podataka: ' + str(len(vina)))
+loadTezine()
+for v0 in vina:
+    descNum = nadjiDescNum(v0.__getattribute__('description'))
+    v0.__setattr__('description', descNum)
+
+
+
 #print(str(round(len(vina)/5*3)) + " " + str(round(len(vina)/5*4)))
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 #for v in trening_set:
