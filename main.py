@@ -84,26 +84,27 @@ def loadTezine():
     for t in tezine:
         if(t<korakTezine):
             noveTezine.append(1)
-        elif(t<(2*korakTezine)):
+        elif(t<(3*korakTezine)):
             noveTezine.append(2)
-        elif(t<(4*korakTezine)):
+        elif(t<(7*korakTezine)):
             noveTezine.append(3)
         else:
             noveTezine.append(4)
-    #print('nove tezine - '+str(noveTezine))
+    print('nove tezine - '+str(noveTezine))
     #napravi vektor za poredjenje za Jackardov koeficijent
     for za in tezine:
-        if(za<(3*korakTezine)):
+        if(za<(1*korakTezine)):
             zaPoredjenje.append(0)
         else:
             zaPoredjenje.append(1)
-    #print('za poredjenje vektor -'+str(zaPoredjenje))
+    print('za poredjenje vektor -'+str(zaPoredjenje))
 
 
 def nadjiDescNum(description):
     y_pred = get_word_vec(description)
-    ret = jaccard_similarity_score(zaPoredjenje, y_pred)
-    print('description --> '+str(ret))
+   # y_pred = list(map(lambda x,y:x*y,y_pred,noveTezine))
+    ret = jaccard_similarity_score(zaPoredjenje, y_pred, True, noveTezine)
+   # print('description --> '+str(ret))
     return ret
 
 #####################
@@ -152,11 +153,14 @@ print('najbolja vina - duzina '+str(len(najboljaVina)))
 
 print('velicina data seta nakon uklanjanja suvisnih podataka: ' + str(len(vina)))
 loadTezine()
+nizDescriptiona = []
+#for v0 in vina[:2000]:
 for v0 in vina:
     descNum = nadjiDescNum(v0.__getattribute__('description'))
     v0.__setattr__('description', descNum)
-
-
+    #nizDescriptiona.append(descNum)
+#print("najmanji u nizu: "+str(min(nizDescriptiona)))
+#print("najveci u nizu: "+str(max(nizDescriptiona)))
 
 #print(str(round(len(vina)/5*3)) + " " + str(round(len(vina)/5*4)))
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
