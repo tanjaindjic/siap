@@ -1,7 +1,7 @@
 from vino import Vino
 import json
 
-def convertToJson(vina):
+def convertToJson(vina, naziv):
     #jsonData = "["
     jsonData = "["
     for v in vina:
@@ -20,10 +20,18 @@ def convertToJson(vina):
 
     jsonData = jsonData[:-1]
     jsonData += "]"
-    with open('trening_set.json', 'w') as outfile:
+    with open(naziv + '.json', 'w') as outfile:
         json.dump(jsonData, outfile)
 
 def convertFromJson():
     with open('trening_set.json') as f:
         data = json.load(f)
     return data
+
+def convertParametri(noveTezine, zaPoredjenje):
+    data = {}
+    data['noveTezine'] = noveTezine
+    data['zaPoredjenje'] = zaPoredjenje
+    jsonData = json.dumps(data)
+    with open('parametri.json', 'w') as outfile:
+        json.dump(jsonData, outfile)
