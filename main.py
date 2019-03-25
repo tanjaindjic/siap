@@ -3,6 +3,7 @@ from vino import Vino
 import statistics
 import numpy as np
 import pip
+import formData
 print(pip.__version__)
 import nltk
 import re
@@ -18,7 +19,7 @@ import matplotlib.pyplot as plt
 
 vazne_reci = []
 atributi = []
-categs = []
+allCategs = []
 vecNajVina = []
 zaPoredjenje = []
 noveTezine = []
@@ -51,7 +52,7 @@ def get_word_vec(sentence):
             str = a.__getattribute__('category') + " " +  a.__getattribute__('subcategory') + " " +  a.__getattribute__('specific')
             if str not in kategorije:
                 kategorije.append(str)
-    for c in categs:
+    for c in allCategs:
         if(c in kategorije):
             vec.append(1)
         else:
@@ -65,9 +66,9 @@ def loadAtributes():
         rez[3] = saZnakom[0]
         atributi.append(Atribut(rez[0], rez[1], rez[2], rez[3], 1))
         str1111 = rez[0] + " " + rez[1] + " " + rez[2]
-        if str1111 not in categs:
-            categs.append(str1111)
-    print('duzina vektora sa kategorijama - '+str(len(categs)))
+        if str1111 not in allCategs:
+            allCategs.append(str1111)
+    print('duzina vektora sa kategorijama - '+str(len(allCategs)))
 def loadTezine():
     #prolai kroz sve deskripsone i dodeljuje im vektor
     for nv in najboljaVina:
@@ -90,14 +91,14 @@ def loadTezine():
             noveTezine.append(3)
         else:
             noveTezine.append(4)
-    print('nove tezine - '+str(noveTezine))
+    #print('nove tezine - '+str(noveTezine))
     #napravi vektor za poredjenje za Jackardov koeficijent
     for za in tezine:
         if(za<(1*korakTezine)):
             zaPoredjenje.append(0)
         else:
             zaPoredjenje.append(1)
-    print('za poredjenje vektor -'+str(zaPoredjenje))
+    #print('za poredjenje vektor -'+str(zaPoredjenje))
 
 
 def nadjiDescNum(description):
@@ -145,9 +146,9 @@ for v in data:
         if (descriptionIsEnglish(v['description'])):
             #vec = get_word_vec(v['description'])
             #print(vec)
-            vina.append(Vino(v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery'], 0))
+            vina.append(Vino.initialize(Vino(), v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery'], 0))
             if(int(v['points'])>96):
-                najboljaVina.append(Vino(v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery'], 0))
+                najboljaVina.append(Vino.initialize(Vino(), v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery'], 0))
 print('najbolja vina - duzina '+str(len(najboljaVina)))
 #njabolja vina - duzina --> za >97 se dobija 82, za >96 232, za >95 570
 
@@ -155,15 +156,7 @@ print('velicina data seta nakon uklanjanja suvisnih podataka: ' + str(len(vina))
 loadTezine()
 nizDescriptiona = []
 #for v0 in vina[:2000]:
-for v0 in vina:
-    descNum = nadjiDescNum(v0.__getattribute__('description'))
-    v0.__setattr__('description', descNum)
-    #nizDescriptiona.append(descNum)
-#print("najmanji u nizu: "+str(min(nizDescriptiona)))
-#print("najveci u nizu: "+str(max(nizDescriptiona)))
 
-#print(str(round(len(vina)/5*3)) + " " + str(round(len(vina)/5*4)))
-trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 #for v in trening_set:
 #    vreca.extend(word_extraction(v.description))
 #print(vreca)
@@ -253,3 +246,18 @@ a = np.array(pairs_k4)
 #plt.show()
 #print(str(vina[0]))
 #print(str(vina[1]))
+
+trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
+for v0 in trening_set:
+    descNum = nadjiDescNum(v0.__getattribute__('description'))
+    v0.__setattr__('description', descNum)
+
+
+formData.convertToJson(trening_set)
+dataSetic = formData.convertFromJson()
+#print(dataSetic)
+#nizDescriptiona.append(descNum)
+#print("najmanji u nizu: "+str(min(nizDescriptiona)))
+#print("najveci u nizu: "+str(max(nizDescriptiona)))
+
+#print(str(round(len(vina)/5*3)) + " " + str(round(len(vina)/5*4)))
