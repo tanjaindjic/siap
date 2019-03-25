@@ -1,4 +1,5 @@
 from sklearn.metrics import jaccard_similarity_score
+import formData
 atributi = []
 allCategs = []
 zaPoredjenje = []
@@ -26,3 +27,9 @@ def nadjiDescNum(description):
     ret = jaccard_similarity_score(zaPoredjenje, y_pred, True, noveTezine)
    # print('description --> '+str(ret))
     return ret
+def nadjiTitlove():
+    dataSetic = formData.convertFromJson()
+    for ds in dataSetic:
+        print(ds['title'])
+
+nadjiTitlove()
