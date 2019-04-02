@@ -4,7 +4,7 @@ class Vino(JSONEncoder):
         return o.__dict__
     def __init__(self):
         pass
-    def initialize(self, country, description, points, price, province, taster_name, title, variety, winery, descNum ):
+    def initialize(self, country, description, points, price, province, taster_name, title, variety, winery, pointGroup ):
         self.country = country
         self.description = description
         self.points = points
@@ -14,7 +14,7 @@ class Vino(JSONEncoder):
         self.title = title
         self.variety = variety
         self.winery = winery
-        self.descNum = descNum
+        self.pointGroup = pointGroup
 
         return self
 
@@ -29,7 +29,7 @@ class Vino(JSONEncoder):
         data['title'] = self.title
         data['variety'] = self.variety
         data['winery'] = self.winery
-        data['descNum'] = self.descNum
+        data['pointGroup'] = self.pointGroup
         return data
 
     def __str__(self):

@@ -7,6 +7,8 @@ import formData
 print(pip.__version__)
 import nltk
 import re
+import csv
+import pandas as pd
 #from nltk.corpus import stopwords
 from atributes import Atribut
 #stop_words = set(stopwords.words('english'))
@@ -157,8 +159,8 @@ loadTezine()
 nizDescriptiona = []
 #for v0 in vina[:2000]:
 
-#for v in trening_set:
-#    vreca.extend(word_extraction(v.description))
+# for v in vina:
+#   vreca.extend(word_extraction(v.description))
 #print(vreca)
 #tokeni =  tokenize(vreca)
 #print(tokeni)
@@ -247,14 +249,99 @@ a = np.array(pairs_k4)
 #print(str(vina[0]))
 #print(str(vina[1]))
 
-trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
-# for v0 in trening_set:
-#     descNum = nadjiDescNum(v0.__getattribute__('description'))
-#     v0.__setattr__('description', descNum)
+#trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
+def makeCSVfile():
+    for v0 in vina:
+        descNum = nadjiDescNum(v0.__getattribute__('description'))
+        v0.__setattr__('description', descNum)
 
-formData.convertToJson(test_set, "test_set")
+    countries = []
+    provinces = []
+    varieties = []
+    wineries = []
+    taster_names = []
+    titles = []
 
-formData.convertToJson(validacioni, "validacioni_set")
+    for v in vina:
+        if v.__getattribute__('country') not in countries:
+            countries.append(v.__getattribute__('country'))
+        if v.__getattribute__('province') not in provinces:
+            provinces.append(v.__getattribute__('province'))
+        if v.__getattribute__('variety') not in varieties:
+            varieties.append(v.__getattribute__('variety'))
+        if v.__getattribute__('winery') not in wineries:
+            wineries.append(v.__getattribute__('winery'))
+        if v.__getattribute__('taster_name') not in taster_names:
+            taster_names.append(v.__getattribute__('taster_name'))
+        if v.__getattribute__('title') not in titles:
+            titles.append(v.__getattribute__('title'))
+            # print(v['title'])
+    # print("countries: "+str(len(countries)))
+    # print("provinces: "+str(len(provinces)))
+    # print("varieties: "+str(len(varieties)))
+    # print("wineries: "+str(len(wineries)))
+    # print("taster_names: "+str(len(taster_names)))
+    # print("titles: "+str(len(titles)))
+    len_countries = len(countries)
+    len_provinces = len(provinces)
+    len_varieties = len(varieties)
+    len_wineries = len(wineries)
+    len_taster_names = len(taster_names)
+    len_title = len(titles)
+    for v in vina:
+        country_index = countries.index(v.__getattribute__('country')) + 1
+        value_country = (1 / len_countries) * country_index
+        v.__setattr__('country', value_country)
+
+        province_index = provinces.index(v.__getattribute__('province')) + 1
+        value_province = (1 / len_provinces) * province_index
+        v.__setattr__('province', value_province)
+
+        variety_index = varieties.index(v.__getattribute__('variety')) + 1
+        value_variety = (1 / len_varieties) * variety_index
+        v.__setattr__('variety', value_variety)
+
+        winery_index = wineries.index(v.__getattribute__('winery')) + 1
+        value_winery = (1 / len_wineries) * winery_index
+        v.__setattr__('winery', value_winery)
+
+        taster_name_index = taster_names.index(v.__getattribute__('taster_name')) + 1
+        value_taster_name = (1 / len_taster_names) * taster_name_index
+        v.__setattr__('taster_name', value_taster_name)
+
+        title_index = titles.index(v.__getattribute__('title')) + 1
+        value_title = (1 / len_title) * title_index
+        v.__setattr__('title', value_title)
+
+        if (int(v.__getattribute__('points')) < 85):
+            v.__setattr__('pointGroup', 0)
+        elif (int(v.__getattribute__('points')) < 90):
+            v.__setattr__('pointGroup', 1)
+        elif (int(v.__getattribute__('points')) < 95):
+            v.__setattr__('pointGroup', 2)
+        else:
+            v.__setattr__('pointGroup', 3)
+
+    with open('dataCSV.csv', 'w', ) as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(
+            ['country', 'description', 'points', 'price', 'province', 'taster_name', 'title', 'variety', 'winery',
+             'pointGroup'])
+        for d in vina:
+            writer.writerow(
+                [d.__getattribute__('country'), d.__getattribute__('description'), d.__getattribute__('points'),
+                 d.__getattribute__('price'), d.__getattribute__('province'), d.__getattribute__('taster_name'),
+                 d.__getattribute__('title'), d.__getattribute__('variety'), d.__getattribute__('winery'),
+                 d.__getattribute__('pointGroup')])
+    print("zavrsio4")
+
+data = pd.read_csv("dataCSV.csv")
+print(str(len(data)))
+
+#
+# formData.convertToJson(test_set, "test_set")
+#
+# formData.convertToJson(validacioni, "validacioni_set")
 #formData.convertToJson(trening_set)
 #formData.convertParametri(noveTezine, zaPoredjenje)
 #dataSetic = formData.convertFromJson()
