@@ -1,4 +1,3 @@
-import jsonpickle
 from json import JSONEncoder
 class Vino(JSONEncoder):
     def default(self, o):
@@ -35,6 +34,3 @@ class Vino(JSONEncoder):
 
     def __str__(self):
         return "Vino country is %s, description is %s, tittle is %s" % (self.country, self.description, self.title)
-
-    def transform(v):
-        return jsonpickle.encode(v, unpicklable=False)
