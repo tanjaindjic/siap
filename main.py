@@ -183,16 +183,18 @@ def processTestSet():
 
 
 def naiveBayes():
-    gnb = GaussianNB()#Number of mislabeled points out of a total 21983 points : 7215, performance 67.18%
+    gnb = GaussianNB()#Number of mislabeled points out of a total 21983 points : 6192, performance 71.83%
     bnb = BernoulliNB()#Number of mislabeled points out of a total 21983 points : 7206, performance 67.22%
-    mnb = MultinomialNB()#Number of mislabeled points out of a total 21983 points : 7206, performance 67.22%
+    mnb = MultinomialNB()#Number of mislabeled points out of a total 21983 points : 6571, performance 70.11%
     used_features = [
         "country",
         "province",
         "variety",
         "winery",
         "taster_name",
-        "title"
+        "title",
+        "price",
+        "description"
     ]
    # treningFrame = pd.DataFrame(np.array(treningSet).reshape(len(treningSet), 10), columns=['country', 'description', 'points', 'price', 'province', 'taster_name', 'title', 'variety', 'winery', 'pointGroup'])
    # testFrame = pd.DataFrame(np.array(testSet).reshape(len(testSet), 10), columns=['country', 'description', 'points', 'price', 'province', 'taster_name', 'title', 'variety', 'winery', 'pointGroup'])
