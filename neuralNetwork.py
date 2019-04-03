@@ -1,4 +1,4 @@
-from sklearn import svm
+from sklearn.neural_network import MLPClassifier
 import pandas as pd
 import numpy as np
 
@@ -17,12 +17,11 @@ used_features = [
         "variety",
         "winery",
         "taster_name",
-        "title",
         "price",
+        "title",
         "description"
     ]
-
-clf = svm.SVC(gamma='scale', decision_function_shape='ovo')
+clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(7, ), random_state=1)
 clf.fit(trening_set[used_features].values,
         trening_set["pointGroup"])
 y_pred = clf.predict(test_set[used_features])
@@ -32,4 +31,5 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
         (test_set["pointGroup"] != y_pred).sum(),
         100 * (1 - (test_set["pointGroup"] != y_pred).sum() / test_set.shape[0])
     ))
-#Number of mislabeled points out of a total 21983 points : 5454, performance 75.19%
+#Number of mislabeled points out of a total 21983 points : 6091, performance 72.29%
+#Number of mislabeled points out of a total 21983 points : 6062, performance 72.42% <-BEY DESCRIPTION ATRIBUTA

@@ -10,7 +10,6 @@ import re
 import csv
 import pandas as pd
 #from nltk.corpus import stopwords
-from atributes import Atribut
 #stop_words = set(stopwords.words('english'))
 #stop_words.add("the")
 from collections import Counter

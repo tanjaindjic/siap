@@ -5,7 +5,6 @@ import numpy as np
 import csv
 from vino import Vino
 import nltk
-from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 atributi = []
 allCategs = []
 zaPoredjenje = []
@@ -182,33 +181,7 @@ def processTestSet():
 
 
 
-def naiveBayes():
-    gnb = GaussianNB()#Number of mislabeled points out of a total 21983 points : 6192, performance 71.83%
-    bnb = BernoulliNB()#Number of mislabeled points out of a total 21983 points : 7206, performance 67.22%
-    mnb = MultinomialNB()#Number of mislabeled points out of a total 21983 points : 6571, performance 70.11%
-    used_features = [
-        "country",
-        "province",
-        "variety",
-        "winery",
-        "taster_name",
-        "title",
-        "price",
-        "description"
-    ]
-   # treningFrame = pd.DataFrame(np.array(treningSet).reshape(len(treningSet), 10), columns=['country', 'description', 'points', 'price', 'province', 'taster_name', 'title', 'variety', 'winery', 'pointGroup'])
-   # testFrame = pd.DataFrame(np.array(testSet).reshape(len(testSet), 10), columns=['country', 'description', 'points', 'price', 'province', 'taster_name', 'title', 'variety', 'winery', 'pointGroup'])
-    gnb.fit(
-        trening_set[used_features].values,
-        trening_set["pointGroup"]
-    )
-    y_pred = gnb.predict(test_set[used_features])
-    print("Number of mislabeled points out of a total {} points : {}, performance {:05.2f}%"
-        .format(
-        test_set.shape[0],
-        (test_set["pointGroup"] != y_pred).sum(),
-        100 * (1 - (test_set["pointGroup"] != y_pred).sum() / test_set.shape[0])
-    ))
+
 
 # loadTreningSet()
 # print("zavrsio1")
@@ -225,13 +198,8 @@ def naiveBayes():
 #     for d in treningSet:
 #         writer.writerow([d.__getattribute__('country'), d.__getattribute__('description'), d.__getattribute__('points'), d.__getattribute__('price'), d.__getattribute__('province'), d.__getattribute__('taster_name'), d.__getattribute__('title'), d.__getattribute__('variety'), d.__getattribute__('winery'), d.__getattribute__('pointGroup')])
 # print("zavrsio4")
-vina = pd.read_csv("dataCSV.csv")
-# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-#     print(vina[:10])
-#vina["pointGroup"]=np.where(vina["pointGroup"]!="",float(vina["pointGroup"]), 0)
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.1,0, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.5,1, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.75,2, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<1.1,3, vina["pointGroup"])
-trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
-naiveBayes()#Number of mislabeled points out of a total 21983 points : 7215, performance 67.18%
+
+
+
+# Naive Bayes, SVM, stablo odlučivanja, K-NN, neuronska mreža, bagging, boosting, gradient boosted trees, Random Forest,...
+# Pokušale bismo i prediktovanje tačnog broja poena (negranulirani u klase) vina pomoću ridge regresije i gradient boosted trees.

@@ -1,4 +1,4 @@
-from sklearn import svm
+from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 import numpy as np
 
@@ -17,19 +17,20 @@ used_features = [
         "variety",
         "winery",
         "taster_name",
-        "title",
         "price",
+        "title",
         "description"
     ]
-
-clf = svm.SVC(gamma='scale', decision_function_shape='ovo')
-clf.fit(trening_set[used_features].values,
+neigh = KNeighborsClassifier()
+neigh.fit(trening_set[used_features].values,
         trening_set["pointGroup"])
-y_pred = clf.predict(test_set[used_features])
+y_pred = neigh.predict(test_set[used_features])
 print("Number of mislabeled points out of a total {} points : {}, performance {:05.2f}%"
         .format(
         test_set.shape[0],
         (test_set["pointGroup"] != y_pred).sum(),
         100 * (1 - (test_set["pointGroup"] != y_pred).sum() / test_set.shape[0])
     ))
-#Number of mislabeled points out of a total 21983 points : 5454, performance 75.19%
+#Number of mislabeled points out of a total 21983 points : 5876, performance 73.27%
+#Number of mislabeled points out of a total 21983 points : 5443, performance 75.24% <-BEZ TITLE
+
