@@ -199,7 +199,5 @@ def processTestSet():
 #         writer.writerow([d.__getattribute__('country'), d.__getattribute__('description'), d.__getattribute__('points'), d.__getattribute__('price'), d.__getattribute__('province'), d.__getattribute__('taster_name'), d.__getattribute__('title'), d.__getattribute__('variety'), d.__getattribute__('winery'), d.__getattribute__('pointGroup')])
 # print("zavrsio4")
 
-
-
-# Naive Bayes, SVM, stablo odlučivanja, K-NN, neuronska mreža, bagging, boosting, gradient boosted trees, Random Forest,...
+# boosting, gradient boosted trees, Random Forest,...
 # Pokušale bismo i prediktovanje tačnog broja poena (negranulirani u klase) vina pomoću ridge regresije i gradient boosted trees.
