@@ -32,4 +32,5 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
         (test_set["pointGroup"] != y_pred).sum(),
         100 * (1 - (test_set["pointGroup"] != y_pred).sum() / test_set.shape[0])
     ))
+
 #Number of mislabeled points out of a total 21983 points : 5454, performance 75.19%

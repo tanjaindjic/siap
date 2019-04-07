@@ -1,4 +1,6 @@
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import f1_score
 import pandas as pd
 import numpy as np
 
@@ -21,7 +23,7 @@ used_features = [
         "title",
         "description"
     ]
-clf = RandomForestClassifier(n_estimators=250, max_depth=19, random_state=3)
+clf = RandomForestClassifier(n_estimators=225, max_depth=27, random_state=3)
 clf.fit(trening_set[used_features].values,
         trening_set["pointGroup"])
 y_pred = clf.predict(test_set[used_features])
@@ -31,5 +33,10 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
         (test_set["pointGroup"] != y_pred).sum(),
         100 * (1 - (test_set["pointGroup"] != y_pred).sum() / test_set.shape[0])
     ))
+
+print(mean_squared_error(test_set["pointGroup"], y_pred))
+print(f1_score(test_set["pointGroup"], y_pred, average='macro'))
+print(f1_score(test_set["pointGroup"], y_pred, average='micro'))
+print(f1_score(test_set["pointGroup"], y_pred, average=None))
 #Number of mislabeled points out of a total 21983 points : 4605, performance 79.05%
-#Number of mislabeled points out of a total 21983 points : 4326, performance 80.32% <- BEZ TITLE ATRIBUTA
+#Number of mislabeled points out of a total 21983 points : 4300, performance 80.54% <- BEZ TITLE ATRIBUTA
