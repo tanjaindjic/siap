@@ -1,7 +1,7 @@
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import GradientBoostingClassifier
 import pandas as pd
 import numpy as np
-from sklearn import ensemble
+from sklearn.metrics import mean_squared_error
 
 
 vina = pd.read_csv("dataCSV.csv")
@@ -17,11 +17,11 @@ used_features = [
         "title",
         "description"
     ]
-gbr = ensemble.GradientBoostingRegressor(n_estimators=500, max_depth=4, min_samples_split=2, learning_rate=0.01, loss='ls')
+gbr = GradientBoostingClassifier()
 
 gbr.fit(
     trening_set[used_features].values,
-    trening_set["points"].values)
+    trening_set["points"])
 y_pred = gbr.predict(test_set[used_features])
 print("Number of mislabeled points out of a total {} points : {}, performance {:05.2f}%"
         .format(
@@ -29,3 +29,8 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
         (test_set["points"] != y_pred).sum(),
         100 * (1 - (test_set["points"] != y_pred).sum() / test_set.shape[0])
     ))
+
+print(mean_squared_error(test_set["points"], y_pred))
+
+#Number of mislabeled points out of a total 21983 points : 19013, performance 13.51%
+#mean_squared_error = 11.610335259063822

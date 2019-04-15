@@ -4,20 +4,16 @@ from atribut import Atribut
 import statistics
 import numpy as np
 import pip
-import formData
 print(pip.__version__)
-import nltk
 import re
 import csv
 import pandas as pd
-#from nltk.corpus import stopwords
-#stop_words = set(stopwords.words('english'))
-#stop_words.add("the")
 from collections import Counter
-from sklearn.metrics import jaccard_similarity_score
-
-from pprint import pprint
 import matplotlib.pyplot as plt
+import nltk
+nltk.download('punkt')
+from nltk.tokenize import sent_tokenize, word_tokenize
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 
 vazne_reci = []
 atributi = []
@@ -26,17 +22,6 @@ vecNajVina = []
 zaPoredjenje = []
 noveTezine = []
 
-def get_important_words(vreca):
-    cnt = Counter(vreca)
-    vazne_reci = []
-    vazne_reci.append([k for k, v in cnt.items() if v > 100])
-    return vazne_reci
-
-def word_extraction(sentence):
-    sentence = sentence.lower()
-    words = re.sub("[^\w]", " ", sentence).split()
-    #cleaned_text = [w.lower() for w in words if w not in stop_words]
-    #return cleaned_text
 ############################
 def descriptionIsEnglish(sentence):
     try:
@@ -44,22 +29,6 @@ def descriptionIsEnglish(sentence):
     except UnicodeDecodeError:
         return False
     return True
-def get_word_vec(sentence):
-    vec = []
-    kategorije = []
-    sentence = sentence.upper();
-    for a in atributi:
-        word = a.__getattribute__('normalized')
-        if(word in sentence):
-            str = a.__getattribute__('category') + " " +  a.__getattribute__('subcategory') + " " +  a.__getattribute__('specific')
-            if str not in kategorije:
-                kategorije.append(str)
-    for c in allCategs:
-        if(c in kategorije):
-            vec.append(1)
-        else:
-            vec.append(0)
-    return vec
 def loadAtributes():
     f = open("CWW.txt", "r")
     for x in f:
@@ -72,43 +41,28 @@ def loadAtributes():
             allCategs.append(str1111)
     print('duzina vektora sa kategorijama - '+str(len(allCategs)))
 def loadTezine():
-    #prolai kroz sve deskripsone i dodeljuje im vektor
+    data = []
     for nv in najboljaVina:
-        vecValue = get_word_vec(nv.__getattribute__('description'))
-        vecNajVina.append(vecValue)
-    tezine = vecNajVina[0]
-    #sabira po kolonama sve elemente da bi videli koliko puta se neki atribut pojavljuje
-    for vnv in vecNajVina[1:]:
-        tezine = list(map(sum, zip(tezine, vnv)))
-    #print('tezine - ' + str(tezine))
-    maxTezine = max(tezine)
-    korakTezine = round(maxTezine/16)
-    #print('korak za tezinu - '+str(korakTezine))
-    for t in tezine:
-        if(t<korakTezine):
-            noveTezine.append(1)
-        elif(t<(3*korakTezine)):
-            noveTezine.append(2)
-        elif(t<(7*korakTezine)):
-            noveTezine.append(3)
-        else:
-            noveTezine.append(4)
-    #print('nove tezine - '+str(noveTezine))
-    #napravi vektor za poredjenje za Jackardov koeficijent
-    for za in tezine:
-        if(za<(1*korakTezine)):
-            zaPoredjenje.append(0)
-        else:
-            zaPoredjenje.append(1)
-    #print('za poredjenje vektor -'+str(zaPoredjenje))
-
-
-def nadjiDescNum(description):
-    y_pred = get_word_vec(description)
-   # y_pred = list(map(lambda x,y:x*y,y_pred,noveTezine))
-    ret = jaccard_similarity_score(zaPoredjenje, y_pred, True, noveTezine)
-   # print('description --> '+str(ret))
-    return ret
+        data.append(nv.__getattribute__('description'))
+    print("data len: "+str(len(data)))
+    sentences = [TaggedDocument(sentence, 'tag') for sentence in data]
+    model = Doc2Vec(sentences, window=1, min_count=1, workers=1)
+    model.train(sentences, epochs=model.iter, total_examples=model.corpus_count)
+    print("duzina: "+str(len(model.docvecs)))
+    print("nulti: "+str(model.docvecs[0]))
+    print("prvi: "+str(model.docvecs[1]))
+    print("drugi: "+str(model.docvecs[2]))
+    for v0 in vina:
+        description = v0.__getattribute__('description')
+        words = []
+        for i in sent_tokenize(description):
+            temp = []
+            for j in word_tokenize(i):
+                temp.append(j.lower())
+            words.append(temp)
+        descNum = model.rank(sentences, words)
+        v0.__setattr__('description', descNum)
+        print("Doc2Vec: "+str(descNum))
 
 #####################
 def isEnglish(s):
@@ -124,17 +78,8 @@ def isEnglish(s):
                 niz.append(sentence)
     return niz
 
-def tokenize(sentences):
-    words = []
 
-    vazne_reci = get_important_words(sentences)
-    for sentence in vazne_reci:
-        #print(sentence)
-        sentence = isEnglish(sentence)
-        words.extend(sentence)
-    words = sorted(list(set(words)))
 
-    return words
 
 loadAtributes()
 with open('winemag-data-130k-v2.json') as f:
@@ -146,13 +91,18 @@ najboljaVina=[]
 for v in data:
     if (v['points'] is not None and v['country'] is not None and v['variety'] is not None and v['title'] is not None):
         if (descriptionIsEnglish(v['description'])):
-            #vec = get_word_vec(v['description'])
-            #print(vec)
             vina.append(Vino.initialize(Vino(), v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery'], 0))
             if(int(v['points'])>96):
                 najboljaVina.append(Vino.initialize(Vino(), v['country'], v['description'], v['points'], v['price'], v['province'], v['taster_name'],  v['title'], v['variety'],  v['winery'], 0))
 print('najbolja vina - duzina '+str(len(najboljaVina)))
 #njabolja vina - duzina --> za >97 se dobija 82, za >96 232, za >95 570
+countriesProvince = []
+for v0 in vina:
+    spojeno = v0.__getattribute__('country') + " - "+v0.__getattribute__('province')
+    if spojeno not in countriesProvince:
+        countriesProvince.append(spojeno)
+print("dzuina countriesProvince: "+str(len(countriesProvince)))
+print(countriesProvince)
 print('velicina data seta nakon uklanjanja suvisnih podataka: ' + str(len(vina)))
 loadTezine()
 nizDescriptiona = []
@@ -250,10 +200,6 @@ a = np.array(pairs_k4)
 
 #trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 def makeCSVfile():
-    for v0 in vina:
-        descNum = nadjiDescNum(v0.__getattribute__('description'))
-        v0.__setattr__('description', descNum)
-
     countries = []
     provinces = []
     varieties = []
@@ -274,13 +220,6 @@ def makeCSVfile():
             taster_names.append(v.__getattribute__('taster_name'))
         if v.__getattribute__('title') not in titles:
             titles.append(v.__getattribute__('title'))
-            # print(v['title'])
-    # print("countries: "+str(len(countries)))
-    # print("provinces: "+str(len(provinces)))
-    # print("varieties: "+str(len(varieties)))
-    # print("wineries: "+str(len(wineries)))
-    # print("taster_names: "+str(len(taster_names)))
-    # print("titles: "+str(len(titles)))
     len_countries = len(countries)
     len_provinces = len(provinces)
     len_varieties = len(varieties)
@@ -321,7 +260,7 @@ def makeCSVfile():
         else:
             v.__setattr__('pointGroup', 3)
 
-    with open('dataCSV.csv', 'w', ) as csvfile:
+    with open('dataCSV_embedding.csv', 'w', ) as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
             ['country', 'description', 'points', 'price', 'province', 'taster_name', 'title', 'variety', 'winery',
