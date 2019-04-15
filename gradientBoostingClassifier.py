@@ -11,10 +11,8 @@ used_features = [
         "country",
         "province",
         "variety",
-        "winery",
         "taster_name",
         "price",
-        "title",
         "description"
     ]
 gbr = GradientBoostingClassifier()
@@ -34,3 +32,6 @@ print(mean_squared_error(test_set["points"], y_pred))
 
 #Number of mislabeled points out of a total 21983 points : 19013, performance 13.51%
 #mean_squared_error = 11.610335259063822
+
+#Number of mislabeled points out of a total 21983 points : 17491, performance 20.43% <- BEZ TITLE ATRIBUTA, WINERY
+#5.2263112405040255
