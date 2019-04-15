@@ -1,5 +1,6 @@
 import json
 from vino import Vino
+from latlon_vino import LLVino
 from atribut import Atribut
 import statistics
 import numpy as np
@@ -14,7 +15,7 @@ import nltk
 nltk.download('punkt')
 from nltk.tokenize import sent_tokenize, word_tokenize
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-
+from geopy.geocoders import Nominatim
 vazne_reci = []
 atributi = []
 allCategs = []
@@ -98,9 +99,22 @@ print('najbolja vina - duzina '+str(len(najboljaVina)))
 #njabolja vina - duzina --> za >97 se dobija 82, za >96 232, za >95 570
 countriesProvince = []
 for v0 in vina:
-    spojeno = v0.__getattribute__('country') + " - "+v0.__getattribute__('province')
+    if(v0.__getattribute__('province') is not None):
+        spojeno = v0.__getattribute__('province')+", "+v0.__getattribute__('country')
+    else:
+        spojeno = v0.__getattribute__('country')
+
     if spojeno not in countriesProvince:
         countriesProvince.append(spojeno)
+
+
+listaKoordinata = []
+for cp in countriesProvince:
+    geolocator = Nominatim(user_agent="SIAP")
+    location = geolocator.geocode(cp)
+    listaKoordinata.append(location)
+dictionaryLokacija = dict(zip(countriesProvince, listaKoordinata))
+
 print("dzuina countriesProvince: "+str(len(countriesProvince)))
 print(countriesProvince)
 print('velicina data seta nakon uklanjanja suvisnih podataka: ' + str(len(vina)))
@@ -208,10 +222,6 @@ def makeCSVfile():
     titles = []
 
     for v in vina:
-        if v.__getattribute__('country') not in countries:
-            countries.append(v.__getattribute__('country'))
-        if v.__getattribute__('province') not in provinces:
-            provinces.append(v.__getattribute__('province'))
         if v.__getattribute__('variety') not in varieties:
             varieties.append(v.__getattribute__('variety'))
         if v.__getattribute__('winery') not in wineries:
@@ -226,66 +236,52 @@ def makeCSVfile():
     len_wineries = len(wineries)
     len_taster_names = len(taster_names)
     len_title = len(titles)
+    ll_vina = []
     for v in vina:
-        country_index = countries.index(v.__getattribute__('country')) + 1
-        value_country = (1 / len_countries) * country_index
-        v.__setattr__('country', value_country)
+        ll = LLVino.initialize(LLVino(), 0, v.__getattribute__('description'), v.__getattribute__('points'), v.__getattribute__('price'), 0,v.__getattribute__('taster_name'), v.__getattribute__('title'), v.__getattribute__('variety'), v.__getattribute__('winery'), v.__getattribute__('pointGroup'))
+        if (v.__getattribute__('province') is not None):
+            spojeno = v.__getattribute__('province') + ", " + v.__getattribute__('country')
+        else:
+            spojeno = v.__getattribute__('country')
+        loc = dictionaryLokacija[spojeno]
+        ll.__setattr__('longitude', loc.longitude)
+        ll.__setattr__('latitude', loc.latitude)
 
-        province_index = provinces.index(v.__getattribute__('province')) + 1
-        value_province = (1 / len_provinces) * province_index
-        v.__setattr__('province', value_province)
 
         variety_index = varieties.index(v.__getattribute__('variety')) + 1
         value_variety = (1 / len_varieties) * variety_index
-        v.__setattr__('variety', value_variety)
+        ll.__setattr__('variety', value_variety)
 
         winery_index = wineries.index(v.__getattribute__('winery')) + 1
         value_winery = (1 / len_wineries) * winery_index
-        v.__setattr__('winery', value_winery)
+        ll.__setattr__('winery', value_winery)
 
         taster_name_index = taster_names.index(v.__getattribute__('taster_name')) + 1
         value_taster_name = (1 / len_taster_names) * taster_name_index
-        v.__setattr__('taster_name', value_taster_name)
+        ll.__setattr__('taster_name', value_taster_name)
 
         title_index = titles.index(v.__getattribute__('title')) + 1
         value_title = (1 / len_title) * title_index
-        v.__setattr__('title', value_title)
+        ll.__setattr__('title', value_title)
 
         if (int(v.__getattribute__('points')) < 85):
-            v.__setattr__('pointGroup', 0)
+            ll.__setattr__('pointGroup', 0)
         elif (int(v.__getattribute__('points')) < 90):
-            v.__setattr__('pointGroup', 1)
+            ll.__setattr__('pointGroup', 1)
         elif (int(v.__getattribute__('points')) < 95):
-            v.__setattr__('pointGroup', 2)
+            ll.__setattr__('pointGroup', 2)
         else:
-            v.__setattr__('pointGroup', 3)
-
+            ll.__setattr__('pointGroup', 3)
+        ll_vina.append(ll)
     with open('dataCSV_embedding.csv', 'w', ) as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
-            ['country', 'description', 'points', 'price', 'province', 'taster_name', 'title', 'variety', 'winery',
+            ['longitude', 'description', 'points', 'price', 'latitude', 'taster_name', 'title', 'variety', 'winery',
              'pointGroup'])
-        for d in vina:
+        for d in ll_vina:
             writer.writerow(
-                [d.__getattribute__('country'), d.__getattribute__('description'), d.__getattribute__('points'),
-                 d.__getattribute__('price'), d.__getattribute__('province'), d.__getattribute__('taster_name'),
+                [d.__getattribute__('longitude'), d.__getattribute__('description'), d.__getattribute__('points'),
+                 d.__getattribute__('price'), d.__getattribute__('latitude'), d.__getattribute__('taster_name'),
                  d.__getattribute__('title'), d.__getattribute__('variety'), d.__getattribute__('winery'),
                  d.__getattribute__('pointGroup')])
     print("zavrsio4")
-
-data = pd.read_csv("dataCSV.csv")
-print(str(len(data)))
-
-#
-# formData.convertToJson(test_set, "test_set")
-#
-# formData.convertToJson(validacioni, "validacioni_set")
-#formData.convertToJson(trening_set)
-#formData.convertParametri(noveTezine, zaPoredjenje)
-#dataSetic = formData.convertFromJson()
-#print(dataSetic)
-#nizDescriptiona.append(descNum)
-#print("najmanji u nizu: "+str(min(nizDescriptiona)))
-#print("najveci u nizu: "+str(max(nizDescriptiona)))
-
-#print(str(round(len(vina)/5*3)) + " " + str(round(len(vina)/5*4)))
