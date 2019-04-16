@@ -9,7 +9,7 @@ print(pip.__version__)
 import csv
 import matplotlib.pyplot as plt
 import nltk
-nltk.download('punkt')
+import time
 from nltk.tokenize import sent_tokenize, word_tokenize
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from geopy.geocoders import Nominatim
@@ -66,11 +66,17 @@ print("obavio pribavljanje koordinata")
 
 listaKoordinata = []
 for cp in countriesProvince:
-    geolocator = Nominatim(user_agent="SIAP")
+    geolocator = Nominatim(user_agent="SIAP", timeout=10)
     location = geolocator.geocode(cp)
     listaKoordinata.append(location)
+    time.sleep(2)
 dictionaryLokacija = dict(zip(countriesProvince, listaKoordinata))
-
+try:
+    f = open('dictionaryLokacija.txt', 'w+')
+    f.write(json.dumps(dictionaryLokacija))
+except:
+    print("greska kod pisanja dictLokacija u fajl")
+print("gotov zapis dictionaryLokacija.txt")
 print("duzina countriesProvince: "+str(len(countriesProvince)))
 #print(countriesProvince)
 #print('velicina data seta nakon uklanjanja suvisnih podataka: ' + str(len(vina)))
@@ -181,15 +187,27 @@ len_title = len(titles)
 ll_vina = []
 model= Doc2Vec.load("d2v.model")
 print("dodela vrednosti u polja - 183 linija")
+try:
+    f = open('dictionaryLokacija.txt', 'r')
+    dictionaryLokacijaTxt = json.loads(f.read())
+except:
+    print("greska kod otvaranja dictionaryLokacija.txt")
 for v in vina:
     ll = LLVino.initialize(LLVino(), v.__getattribute__('description'), v.__getattribute__('points'), v.__getattribute__('price'), v.__getattribute__('taster_name'), v.__getattribute__('title'), v.__getattribute__('variety'), v.__getattribute__('winery'), v.__getattribute__('pointGroup'), 0, 0)
     if (v.__getattribute__('province') is not None):
         spojeno = v.__getattribute__('province') + ", " + v.__getattribute__('country')
     else:
         spojeno = v.__getattribute__('country')
+   # print(spojeno)
     loc = dictionaryLokacija[spojeno]
-    ll.__setattr__('longitude', loc.longitude)
-    ll.__setattr__('latitude', loc.latitude)
+   # print(loc)
+    if(loc is None):
+       # print("za spojeno=" + spojeno + " dobio loc=None")
+        ll.__setattr__('longitude', 0)
+        ll.__setattr__('latitude', 0)
+    else:
+        ll.__setattr__('longitude', loc.longitude)
+        ll.__setattr__('latitude', loc.latitude)
 
     ##description
     test_data = word_tokenize(v.__getattribute__('description').lower())
