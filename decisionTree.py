@@ -20,7 +20,7 @@ used_features = [
         "price",
         "description"
     ]
-used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
+used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
 clf = tree.DecisionTreeClassifier()
 clf.fit(trening_set[used_features_embedding].values,
         trening_set["pointGroup"])
@@ -34,4 +34,4 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
 #Number of mislabeled points out of a total 21983 points : 9043, performance 58.86%
 #Number of mislabeled points out of a total 21983 points : 5670, performance 74.21% <- BEZ ATRIBUTA TITLE!!!
 #Number of mislabeled points out of a total 21983 points : 6032, performance 72.56% <- BEZ ATRIBUTA TASTER_NAME I TITLE!!!
-#Number of mislabeled points out of a total 21983 points : 0, performance 100.00% - WORD EMBEDDING
+#Number of mislabeled points out of a total 21983 points : 9480, performance 56.88% - WORD EMBEDDING

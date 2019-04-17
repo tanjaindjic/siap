@@ -22,7 +22,7 @@ used_features = [
     "price",
     "description"
 ]
-used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
+used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
 
 clf = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1), algorithm="SAMME", n_estimators=200)
 clf.fit(
@@ -39,4 +39,4 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
 
 #Number of mislabeled points out of a total 21983 points : 5179, performance 76.44%
 #Number of mislabeled points out of a total 21983 points : 5081, performance 76.89% <-BEZ TITLE ATRIBUTA
-#Number of mislabeled points out of a total 21983 points : 381, performance 98.27% - WORD EMBEDDING
+#Number of mislabeled points out of a total 21983 points : 7691, performance 65.01% - WORD EMBEDDING

@@ -21,7 +21,7 @@ used_features = [
         "price",
         "description"
     ]
-used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
+used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
 
 clf = svm.SVC(gamma='scale', decision_function_shape='ovo')
 clf.fit(trening_set[used_features_embedding].values,

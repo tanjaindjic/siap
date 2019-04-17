@@ -21,13 +21,13 @@ used_features = [
         "price",
         "description"
     ]
-used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
+used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
 clf1 = BaggingClassifier(KNeighborsClassifier(), max_samples=0.5, max_features=0.5)
 
-#clf = BaggingClassifier(n_estimators=50, warm_start=False, random_state=3141)
-clf1.fit(trening_set[used_features_embedding].values,
+clf = BaggingClassifier(n_estimators=50, warm_start=False, random_state=3141)
+clf.fit(trening_set[used_features_embedding].values,
         trening_set["pointGroup"])
-y_pred = clf1.predict(test_set[used_features_embedding])
+y_pred = clf.predict(test_set[used_features_embedding])
 print("Number of mislabeled points out of a total {} points : {}, performance {:05.2f}%"
         .format(
         test_set.shape[0],
@@ -37,6 +37,6 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
 #Number of mislabeled points out of a total 21983 points : 7363, performance 66.51%
 #Number of mislabeled points out of a total 21983 points : 5032, performance 77.11% -> CLF1 - Bagging meta-estimator
 
-#Number of mislabeled points out of a total 21983 points : 0, performance 100.00% - WORD EMBEDDING
-#Number of mislabeled points out of a total 21983 points : 250, performance 98.86% -> CLF1 - Bagging meta-estimator WORD EMBEDDING
+#Number of mislabeled points out of a total 21983 points : 7554, performance 65.64%- WORD EMBEDDING
+#Number of mislabeled points out of a total 21983 points : 7535, performance 65.72% -> CLF1 - Bagging meta-estimator WORD EMBEDDING
 

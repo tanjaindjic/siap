@@ -17,7 +17,7 @@ used_features = [
         "title",
         "description"
     ]
-used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
+used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
 clf = RidgeClassifier(alpha=20)
 #parametters = {'alpha': [1e-15, 1e-10, 1e-8, 1e-4, 1e-2, 1, 5, 10, 20]}
 #rr = GridSearchCV(clf, parametters, scoring='neg_mean_squared_error', cv=5)
@@ -36,5 +36,5 @@ print(mean_squared_error(test_set["points"], y_pred))
 #Number of mislabeled points out of a total 21983 points : 18460, performance 16.03%
 #7.102533776099714
 
-#Number of mislabeled points out of a total 21983 points : 9838, performance 55.25% - WORD EMBEDDING
-#2.90242460083
+#Number of mislabeled points out of a total 21983 points : 18557, performance 15.58% - WORD EMBEDDING
+#7.44538961925

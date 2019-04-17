@@ -20,7 +20,7 @@ used_features = [
     "price",
     "description"
 ]
-used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
+used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
 clf.fit(
     trening_set[used_features_embedding].values,
     trening_set["pointGroup"]
@@ -34,4 +34,4 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
 ))
 
 #Number of mislabeled points out of a total 21983 points : 5380, performance 75.53%
-#Number of mislabeled points out of a total 21983 points : 0, performance 100.00% - WORD EMBEDDING
+#Number of mislabeled points out of a total 21983 points : 7622, performance 65.33% - WORD EMBEDDING

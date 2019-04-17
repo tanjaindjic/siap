@@ -21,7 +21,7 @@ used_features = [
         "title",
         "description"
     ]
-used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
+used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
 neigh = KNeighborsClassifier()
 neigh.fit(trening_set[used_features_embedding].values,
         trening_set["pointGroup"])
@@ -34,5 +34,5 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
     ))
 #Number of mislabeled points out of a total 21983 points : 5876, performance 73.27%
 #Number of mislabeled points out of a total 21983 points : 5443, performance 75.24% <-BEZ TITLE
-#Number of mislabeled points out of a total 21983 points : 471, performance 97.86% - WORD EMBEDDING
+#Number of mislabeled points out of a total 21983 points : 7952, performance 63.83% - WORD EMBEDDING
 

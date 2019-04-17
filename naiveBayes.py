@@ -10,9 +10,9 @@ vina = pd.read_csv("dataCSV_embedding.csv")
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 
 gnb = GaussianNB()      # Number of mislabeled points out of a total 21983 points : 6192, performance 71.83%
-                        #Number of mislabeled points out of a total 21983 points : 0, performance 100.00% - WORD EMBEDDING
+                        #Number of mislabeled points out of a total 21983 points : 8559, performance 61.07% - WORD EMBEDDING
 bnb = BernoulliNB()     # Number of mislabeled points out of a total 21983 points : 7206, performance 67.22%
-                        #Number of mislabeled points out of a total 21983 points : 7587, performance 65.49% - WORD EMBEDDING
+                        #Number of mislabeled points out of a total 21983 points : 9852, performance 55.18% - WORD EMBEDDING
 mnb = MultinomialNB()   # Number of mislabeled points out of a total 21983 points : 6571, performance 70.11%
                         #ERROR ValueError: Input X must be non-negative - WORD EMBEDDING
 used_features = [
@@ -26,7 +26,7 @@ used_features = [
     "description"
 ]
 
-used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
+used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
 mnb.fit(
     trening_set[used_features_embedding].values,
     trening_set["pointGroup"]
