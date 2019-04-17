@@ -2,7 +2,7 @@ from sklearn import svm
 import pandas as pd
 import numpy as np
 
-vina = pd.read_csv("dataCSV.csv")
+vina = pd.read_csv("dataCSV_embedding.csv")
 
 vina["pointGroup"]=np.where(vina["pointGroup"]<0.1,0, vina["pointGroup"])
 vina["pointGroup"]=np.where(vina["pointGroup"]<0.5,1, vina["pointGroup"])
@@ -21,11 +21,12 @@ used_features = [
         "price",
         "description"
     ]
+used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
 
 clf = svm.SVC(gamma='scale', decision_function_shape='ovo')
-clf.fit(trening_set[used_features].values,
+clf.fit(trening_set[used_features_embedding].values,
         trening_set["pointGroup"])
-y_pred = clf.predict(test_set[used_features])
+y_pred = clf.predict(test_set[used_features_embedding])
 print("Number of mislabeled points out of a total {} points : {}, performance {:05.2f}%"
         .format(
         test_set.shape[0],
@@ -34,3 +35,4 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
     ))
 
 #Number of mislabeled points out of a total 21983 points : 5454, performance 75.19%
+#ERROR TypeError: must be real number, not str line 28 - WORD EMBEDDING

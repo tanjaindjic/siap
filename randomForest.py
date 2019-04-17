@@ -4,7 +4,7 @@ from sklearn.metrics import f1_score
 import pandas as pd
 import numpy as np
 
-vina = pd.read_csv("dataCSV.csv")
+vina = pd.read_csv("dataCSV_embedding.csv")
 
 vina["pointGroup"]=np.where(vina["pointGroup"]<0.1,0, vina["pointGroup"])
 vina["pointGroup"]=np.where(vina["pointGroup"]<0.5,1, vina["pointGroup"])
@@ -23,10 +23,11 @@ used_features = [
         "title",
         "description"
     ]
+used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
 clf = RandomForestClassifier(n_estimators=225, max_depth=27, random_state=3)
-clf.fit(trening_set[used_features].values,
+clf.fit(trening_set[used_features_embedding].values,
         trening_set["pointGroup"])
-y_pred = clf.predict(test_set[used_features])
+y_pred = clf.predict(test_set[used_features_embedding])
 print("Number of mislabeled points out of a total {} points : {}, performance {:05.2f}%"
         .format(
         test_set.shape[0],
@@ -40,3 +41,5 @@ print(f1_score(test_set["pointGroup"], y_pred, average='micro'))
 print(f1_score(test_set["pointGroup"], y_pred, average=None))
 #Number of mislabeled points out of a total 21983 points : 4605, performance 79.05%
 #Number of mislabeled points out of a total 21983 points : 4300, performance 80.54% <- BEZ TITLE ATRIBUTA
+
+#Number of mislabeled points out of a total 21983 points : 0, performance 100.00% - WORD EMBEDDING

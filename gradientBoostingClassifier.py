@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.metrics import mean_squared_error
 
 
-vina = pd.read_csv("dataCSV.csv")
+vina = pd.read_csv("dataCSV_embedding.csv")
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 
 used_features = [
@@ -15,12 +15,13 @@ used_features = [
         "price",
         "description"
     ]
+used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
 gbr = GradientBoostingClassifier()
 
 gbr.fit(
-    trening_set[used_features].values,
+    trening_set[used_features_embedding].values,
     trening_set["points"])
-y_pred = gbr.predict(test_set[used_features])
+y_pred = gbr.predict(test_set[used_features_embedding])
 print("Number of mislabeled points out of a total {} points : {}, performance {:05.2f}%"
         .format(
         test_set.shape[0],
@@ -35,3 +36,6 @@ print(mean_squared_error(test_set["points"], y_pred))
 
 #Number of mislabeled points out of a total 21983 points : 17491, performance 20.43% <- BEZ TITLE ATRIBUTA, WINERY
 #5.2263112405040255
+
+#Number of mislabeled points out of a total 21983 points : 0, performance 100.00% - WORD EMBEDDING
+#0.0

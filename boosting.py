@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 
-vina = pd.read_csv("dataCSV.csv")
+vina = pd.read_csv("dataCSV_embedding.csv")
 vina["pointGroup"]=np.where(vina["pointGroup"]<0.1,0, vina["pointGroup"])
 vina["pointGroup"]=np.where(vina["pointGroup"]<0.5,1, vina["pointGroup"])
 vina["pointGroup"]=np.where(vina["pointGroup"]<0.75,2, vina["pointGroup"])
@@ -22,13 +22,14 @@ used_features = [
     "price",
     "description"
 ]
+used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
 
 clf = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1), algorithm="SAMME", n_estimators=200)
 clf.fit(
-    trening_set[used_features].values,
+    trening_set[used_features_embedding].values,
     trening_set["pointGroup"]
 )
-y_pred = clf.predict(test_set[used_features])
+y_pred = clf.predict(test_set[used_features_embedding])
 print("Number of mislabeled points out of a total {} points : {}, performance {:05.2f}%"
     .format(
     test_set.shape[0],
@@ -38,3 +39,4 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
 
 #Number of mislabeled points out of a total 21983 points : 5179, performance 76.44%
 #Number of mislabeled points out of a total 21983 points : 5081, performance 76.89% <-BEZ TITLE ATRIBUTA
+#Number of mislabeled points out of a total 21983 points : 0, performance 100.00% - WORD EMBEDDING

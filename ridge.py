@@ -3,7 +3,7 @@ from sklearn.linear_model import RidgeClassifier
 import pandas as pd
 import numpy as np
 
-vina = pd.read_csv("dataCSV.csv")
+vina = pd.read_csv("dataCSV_embedding.csv")
 
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 
@@ -17,13 +17,14 @@ used_features = [
         "title",
         "description"
     ]
+used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
 clf = RidgeClassifier(alpha=20)
 #parametters = {'alpha': [1e-15, 1e-10, 1e-8, 1e-4, 1e-2, 1, 5, 10, 20]}
 #rr = GridSearchCV(clf, parametters, scoring='neg_mean_squared_error', cv=5)
 clf.fit(
-        trening_set[used_features].values,
+        trening_set[used_features_embedding].values,
         trening_set["points"])
-y_pred = clf.predict(test_set[used_features])
+y_pred = clf.predict(test_set[used_features_embedding])
 print("Number of mislabeled points out of a total {} points : {}, performance {:05.2f}%"
         .format(
         test_set.shape[0],
@@ -34,3 +35,6 @@ print(mean_squared_error(test_set["points"], y_pred))
 
 #Number of mislabeled points out of a total 21983 points : 18460, performance 16.03%
 #7.102533776099714
+
+#Number of mislabeled points out of a total 21983 points : 9838, performance 55.25% - WORD EMBEDDING
+#2.90242460083
