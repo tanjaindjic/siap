@@ -2,12 +2,12 @@ from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 import numpy as np
 
-vina = pd.read_csv("dataCSV.csv")
+vina = pd.read_csv("dataCSV_embedding.csv")
 
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.1,0, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.5,1, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.75,2, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<1.1,3, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<0.1,0, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<0.5,1, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<0.75,2, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<1.1,3, vina["pointGroup"])
 
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 
@@ -21,10 +21,11 @@ used_features = [
         "title",
         "description"
     ]
+used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
 neigh = KNeighborsClassifier()
-neigh.fit(trening_set[used_features].values,
+neigh.fit(trening_set[used_features_embedding].values,
         trening_set["pointGroup"])
-y_pred = neigh.predict(test_set[used_features])
+y_pred = neigh.predict(test_set[used_features_embedding])
 print("Number of mislabeled points out of a total {} points : {}, performance {:05.2f}%"
         .format(
         test_set.shape[0],
@@ -33,4 +34,5 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
     ))
 #Number of mislabeled points out of a total 21983 points : 5876, performance 73.27%
 #Number of mislabeled points out of a total 21983 points : 5443, performance 75.24% <-BEZ TITLE
+#Number of mislabeled points out of a total 21983 points : 471, performance 97.86% - WORD EMBEDDING
 

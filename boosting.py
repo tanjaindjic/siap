@@ -5,10 +5,10 @@ import numpy as np
 
 
 vina = pd.read_csv("dataCSV_embedding.csv")
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.1,0, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.5,1, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.75,2, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<1.1,3, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<0.1,0, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<0.5,1, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<0.75,2, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<1.1,3, vina["pointGroup"])
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 
 
@@ -39,4 +39,4 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
 
 #Number of mislabeled points out of a total 21983 points : 5179, performance 76.44%
 #Number of mislabeled points out of a total 21983 points : 5081, performance 76.89% <-BEZ TITLE ATRIBUTA
-#Number of mislabeled points out of a total 21983 points : 0, performance 100.00% - WORD EMBEDDING
+#Number of mislabeled points out of a total 21983 points : 381, performance 98.27% - WORD EMBEDDING

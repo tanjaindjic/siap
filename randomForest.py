@@ -6,10 +6,10 @@ import numpy as np
 
 vina = pd.read_csv("dataCSV_embedding.csv")
 
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.1,0, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.5,1, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<0.75,2, vina["pointGroup"])
-vina["pointGroup"]=np.where(vina["pointGroup"]<1.1,3, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<0.1,0, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<0.5,1, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<0.75,2, vina["pointGroup"])
+# vina["pointGroup"]=np.where(vina["pointGroup"]<1.1,3, vina["pointGroup"])
 
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 
