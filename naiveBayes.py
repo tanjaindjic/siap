@@ -15,18 +15,11 @@ bnb = BernoulliNB()     # Number of mislabeled points out of a total 21983 point
                         #Number of mislabeled points out of a total 21983 points : 9852, performance 55.18% - WORD EMBEDDING
 mnb = MultinomialNB()   # Number of mislabeled points out of a total 21983 points : 6571, performance 70.11%
                         #ERROR ValueError: Input X must be non-negative - WORD EMBEDDING
-used_features = [
-    "country",
-    "province",
-    "variety",
-    "winery",
-    "taster_name",
-    "title",
-    "price",
-    "description"
-]
 
-used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
+used_features_lonlat = ["country", "province", "variety", "winery", "taster_name", "title", "price", "description", "longitude", "latitude"]
+used_features_embedding = ["description", "price", "taster_name", "title", "variety", "winery", "longitude", "latitude"]
+used_features = ["country", "province", "variety", "winery", "taster_name", "title", "price", "description"]
+
 mnb.fit(
     trening_set[used_features_embedding].values,
     trening_set["pointGroup"]

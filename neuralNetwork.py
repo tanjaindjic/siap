@@ -11,17 +11,11 @@ vina = pd.read_csv("dataCSV_embedding.csv")
 
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 
-used_features = [
-        "country",
-        "province",
-        "variety",
-        "winery",
-        "taster_name",
-        "price",
-        "title",
-        "description"
-    ]
-used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
+
+used_features_lonlat = ["country", "province", "variety", "winery", "taster_name", "title", "price", "description", "longitude", "latitude"]
+used_features_embedding = ["description", "price", "taster_name", "title", "variety", "winery", "longitude", "latitude"]
+used_features = ["country", "province", "variety", "winery", "taster_name", "title", "price", "description"]
+
 clf = MLPClassifier(alpha=1, hidden_layer_sizes=(7, ), random_state=1)
 clf.fit(trening_set[used_features_embedding].values,
         trening_set["pointGroup"])

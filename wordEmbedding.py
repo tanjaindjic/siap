@@ -1,17 +1,15 @@
 import json
 from vino import Vino
 from latlon_vino import LLVino
-from atribut import Atribut
 import statistics
 import numpy as np
 import pip
 print(pip.__version__)
 import csv
 import matplotlib.pyplot as plt
-import nltk
 import time
-from nltk.tokenize import sent_tokenize, word_tokenize
-from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+from nltk.tokenize import word_tokenize
+from gensim.models.doc2vec import Doc2Vec
 from geopy.geocoders import Nominatim
 vazne_reci = []
 atributi = []

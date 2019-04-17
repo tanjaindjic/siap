@@ -4,7 +4,7 @@ from sklearn.metrics import f1_score
 import pandas as pd
 import numpy as np
 
-vina = pd.read_csv("dataCSV_embedding.csv")
+vina = pd.read_csv("dataCSV_lonlat.csv")
 
 # vina["pointGroup"]=np.where(vina["pointGroup"]<0.1,0, vina["pointGroup"])
 # vina["pointGroup"]=np.where(vina["pointGroup"]<0.5,1, vina["pointGroup"])
@@ -13,21 +13,14 @@ vina = pd.read_csv("dataCSV_embedding.csv")
 
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 
-used_features = [
-        "country",
-        "province",
-        "variety",
-        "winery",
-        "taster_name",
-        "price",
-        "title",
-        "description"
-    ]
-used_features_embedding = ["description","points","price","taster_name","title","variety","winery","pointGroup","longitude","latitude"]
+used_features_lonlat = ["country", "province", "variety", "winery", "taster_name", "title", "price", "description", "longitude", "latitude"]
+used_features_embedding = ["description", "price", "taster_name", "title", "variety", "winery", "longitude", "latitude"]
+used_features = ["country", "province", "variety", "winery", "taster_name", "title", "price", "description"]
+
 clf = RandomForestClassifier(n_estimators=225, max_depth=27, random_state=3)
-clf.fit(trening_set[used_features_embedding].values,
+clf.fit(trening_set[used_features_lonlat].values,
         trening_set["pointGroup"])
-y_pred = clf.predict(test_set[used_features_embedding])
+y_pred = clf.predict(test_set[used_features_lonlat])
 print("Number of mislabeled points out of a total {} points : {}, performance {:05.2f}%"
         .format(
         test_set.shape[0],
@@ -36,10 +29,11 @@ print("Number of mislabeled points out of a total {} points : {}, performance {:
     ))
 
 print(mean_squared_error(test_set["pointGroup"], y_pred))
+
 print(f1_score(test_set["pointGroup"], y_pred, average='macro'))
 print(f1_score(test_set["pointGroup"], y_pred, average='micro'))
 print(f1_score(test_set["pointGroup"], y_pred, average=None))
 #Number of mislabeled points out of a total 21983 points : 4605, performance 79.05%
-#Number of mislabeled points out of a total 21983 points : 4300, performance 80.54% <- BEZ TITLE ATRIBUTA
+#Number of mislabeled points out of a total 21983 points : 4300, performance 80.56% <- BEZ TITLE ATRIBUTA I LONGITUDE
 
-#Number of mislabeled points out of a total 21983 points : 0, performance 100.00% - WORD EMBEDDING
+#Number of mislabeled points out of a total 21983 points : 6948, performance 68.39% - WORD EMBEDDING

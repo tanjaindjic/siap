@@ -76,3 +76,5 @@
 #
 # #to find vector of doc in training data using tags or in other words, printing the vector of document at index 1 in training data
 # print(model.docvecs['1'])
+
+

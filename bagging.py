@@ -11,17 +11,11 @@ vina = pd.read_csv("dataCSV_embedding.csv")
 # vina["pointGroup"]=np.where(vina["pointGroup"]<1.1,3, vina["pointGroup"])
 
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
-used_features = [
-        "country",
-        "province",
-        "variety",
-        "winery",
-        "taster_name",
-        "title",
-        "price",
-        "description"
-    ]
-used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
+
+used_features_lonlat = ["country", "province", "variety", "winery", "taster_name", "title", "price", "description", "longitude", "latitude"]
+used_features_embedding = ["description", "price", "taster_name", "title", "variety", "winery", "longitude", "latitude"]
+used_features = ["country", "province", "variety", "winery", "taster_name", "title", "price", "description"]
+
 clf1 = BaggingClassifier(KNeighborsClassifier(), max_samples=0.5, max_features=0.5)
 
 clf = BaggingClassifier(n_estimators=50, warm_start=False, random_state=3141)

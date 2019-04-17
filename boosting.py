@@ -12,17 +12,9 @@ vina = pd.read_csv("dataCSV_embedding.csv")
 trening_set, test_set, validacioni = np.split(vina, [round(len(vina)/5*3), round(len(vina)/5*4)])
 
 
-used_features = [
-    "country",
-    "province",
-    "variety",
-    "winery",
-    "taster_name",
-    "title",
-    "price",
-    "description"
-]
-used_features_embedding = ["description","price","taster_name","title","variety","winery","longitude","latitude"]
+used_features_lonlat = ["country", "province", "variety", "winery", "taster_name", "title", "price", "description", "longitude", "latitude"]
+used_features_embedding = ["description", "price", "taster_name", "title", "variety", "winery", "longitude", "latitude"]
+used_features = ["country", "province", "variety", "winery", "taster_name", "title", "price", "description"]
 
 clf = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1), algorithm="SAMME", n_estimators=200)
 clf.fit(
